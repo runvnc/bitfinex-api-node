@@ -19,6 +19,10 @@ export default class BitfinexAPI {
       .then(get(`data`))
       .catch(err => Promise.reject(err.response.data));
 
+  setNextNonce = (nonce) => {
+    this.nonce = nonce+"";
+  }
+
   checkNonce = () => {
     let nonce = Date.now().toString();
     if (!this.lastNonce) {

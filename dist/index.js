@@ -33,6 +33,10 @@ class BitfinexAPI {
   constructor({ key, secret } = {}) {
     this.requestPublic = (endpoint, params = {}) => _axios2.default.get(`${this.baseUrl}/v1${endpoint}`, { params }).then((0, _get2.default)(`data`)).catch(err => Promise.reject(err.response.data));
 
+    this.setNextNonce = nonce => {
+      this.nonce = nonce + "";
+    };
+
     this.checkNonce = () => {
       let nonce = Date.now().toString();
       if (!this.lastNonce) {
