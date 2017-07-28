@@ -39,12 +39,12 @@ class BitfinexAPI {
 
     this.checkNonce = () => {
       let nonce = Date.now().toString();
+      if (this.nonce) nonce = this.nonce;
       if (!this.lastNonce) {
         this.lastNonce = nonce;
         return nonce;
       }
-      if (this.nonce) nonce = this.nonce;
-      if (nonce * 1 <= this.lastNonce * 1) throw new Error("Bitfinex nonce did not increment." + "last=", this.lastNonce, "curr=", nonce);
+      if (nonce * 1 <= this.lastNonce * 1) throw new Error("Bitfinex nonce did not increment." + "last=" + this.lastNonce + "curr=" + nonce);
       this.lastNonce = nonce;
       return nonce;
     };
