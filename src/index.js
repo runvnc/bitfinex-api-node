@@ -19,6 +19,20 @@ export default class BitfinexAPI {
       .then(get(`data`))
       .catch(err => Promise.reject(err.response.data));
 
+  checkNonce = () => {
+    let nonce = Date.now().toString();
+    if (!this.lastNonce) {
+      this.lastNonce = nonce;
+      return nonce;
+    }
+    if (this.nonce) nonce = this.nonce;
+    if (nonce*1 <= this.lastNonce*1)
+      throw new Error("Bitfinex nonce did not increment."+
+                      "last=",this.lastNonce,"curr=",nonce);
+    this.lastNonce = nonce;
+    return nonce;
+  }
+
   requestPrivate = (endpoint, params = {}) => {
     if (!this.key || !this.secret) {
       throw new Error(
@@ -30,7 +44,7 @@ export default class BitfinexAPI {
     const requestUrl = `${this.baseUrl}${requestPath}`;
 
     const payload = {
-      nonce: Date.now().toString(),
+      nonce: this.checkNonce(),
       request: requestPath,
       ...params,
     };

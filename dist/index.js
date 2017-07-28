@@ -33,6 +33,18 @@ class BitfinexAPI {
   constructor({ key, secret } = {}) {
     this.requestPublic = (endpoint, params = {}) => _axios2.default.get(`${this.baseUrl}/v1${endpoint}`, { params }).then((0, _get2.default)(`data`)).catch(err => Promise.reject(err.response.data));
 
+    this.checkNonce = () => {
+      let nonce = Date.now().toString();
+      if (!this.lastNonce) {
+        this.lastNonce = nonce;
+        return nonce;
+      }
+      if (this.nonce) nonce = this.nonce;
+      if (nonce * 1 <= this.lastNonce * 1) throw new Error("Bitfinex nonce did not increment." + "last=", this.lastNonce, "curr=", nonce);
+      this.lastNonce = nonce;
+      return nonce;
+    };
+
     this.requestPrivate = (endpoint, params = {}) => {
       if (!this.key || !this.secret) {
         throw new Error(`API key and secret key required to use authenticated methods`);
@@ -42,7 +54,7 @@ class BitfinexAPI {
       const requestUrl = `${this.baseUrl}${requestPath}`;
 
       const payload = _extends({
-        nonce: Date.now().toString(),
+        nonce: this.checkNonce(),
         request: requestPath
       }, params);
 
